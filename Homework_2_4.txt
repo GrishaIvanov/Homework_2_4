@@ -1,0 +1,25 @@
+Создание связующей таблицы:
+
+CREATE TABLE product_shop (
+    product_id INT,
+    shop_name VARCHAR(255),
+    PRIMARY KEY (product_id, shop_name),
+    FOREIGN KEY (product_id) REFERENCES products (product_id)
+);
+
+
+Создание витрины:
+
+SELECT pl.Shop_name,
+       pr.product_name,
+       SUM(s.sales_cnt) AS sales_fact,
+       pl.plan_cnt AS sales_plan,
+       SUM(s.sales_cnt) / pl.plan_cnt AS "sales_fact/sales_plan",
+       SUM(s.sales_cnt * pr.price) AS income_fact,
+       pl.plan_cnt * pr.price AS income_plan,
+       (SUM(s.sales_cnt * pr.price) / (pl.plan_cnt * pr.price)) AS "income_fact/income_plan"
+FROM shop_dns s
+JOIN products pr ON s.product_id = pr.product_id
+JOIN plan pl ON s.product_id = pl.product_id
+GROUP BY pl.Shop_name, pr.product_name, pl.plan_cnt, pr.price
+ORDER BY pl.Shop_name, pr.product_name;
